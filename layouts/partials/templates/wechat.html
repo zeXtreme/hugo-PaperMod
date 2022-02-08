@@ -1,0 +1,27 @@
+<!-- WeChat Sharing -->
+<script>
+    var WECHAT_TITLE = "{{ .Title }}";
+    var WECHAT_DESC = "{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}";
+    {{- if .Params.cover.image -}}
+    {{- if (ne .Params.cover.relative true) }}
+    var WECHAT_IMAGE = "{{ .Params.cover.image | absURL }}";
+    {{- else}}
+    var WECHAT_IMAGE = "{{ (path.Join .RelPermalink .Params.cover.image ) | absURL }}";
+    {{- end}}
+    {{- else }}
+
+    {{- with $.Params.images -}}
+    {{- range first 6 . }}var WECHAT_IMAGE = "{{ . | absURL }}";{{ end -}}
+    {{- else -}}
+    {{- $images := $.Resources.ByType "image" -}}
+    {{- $featured := $images.GetMatch "*feature*" -}}
+    {{- if not $featured }}{{ $featured = $images.GetMatch "{*cover*,*thumbnail*}" }}{{ end -}}
+    {{- with $featured -}}
+    var WECHAT_IMAGE = "{{ $featured.Permalink }}";
+    {{- else -}}
+    {{- with $.Site.Params.images }}var WECHAT_IMAGE = "{{ index . 0 | absURL }}";{{ end -}}
+    {{- end -}}
+    {{- end -}}
+    {{- end }}
+    var WCHAT_NO_GA = '';
+  </script>
